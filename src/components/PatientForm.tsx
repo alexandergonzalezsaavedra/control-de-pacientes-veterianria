@@ -1,13 +1,21 @@
+import { usePatienteStore } from '../store/store'
+
 import { useForm } from 'react-hook-form'
 import MenssageError from './MenssageError'
 import { DraftPatient } from '../types'
 
+
 export default function PatientForm() {
-    const { register, handleSubmit, formState: { errors } } = useForm<DraftPatient>()
+
+    const addPatient = usePatienteStore(state => state.addPatient)
+
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<DraftPatient>()
 
     const registerPatient = (data: DraftPatient) => {
-        console.log(data)
+        addPatient(data)
+        reset()
     }
+
     return (
         <div className="md:w-1/2 lg:w-2/5 mx-5">
             <h2 className="font-black text-3xl text-center">Seguimiento Pacientes</h2>
