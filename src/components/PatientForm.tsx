@@ -1,21 +1,60 @@
+import { toast, Slide } from 'react-toastify'
 import { usePatienteStore } from '../store/store'
 
 import { useForm } from 'react-hook-form'
 import MenssageError from './MenssageError'
 import { DraftPatient } from '../types'
-
+import { useEffect } from 'react'
 
 export default function PatientForm() {
-
     const addPatient = usePatienteStore(state => state.addPatient)
+    const activeId = usePatienteStore(state => state.activeId)
+    const patients = usePatienteStore(state => state.patients)
+    const updatePatient = usePatienteStore(state => state.updatePatient)
+    const { register, setValue, handleSubmit, formState: { errors }, reset } = useForm<DraftPatient>()
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<DraftPatient>()
-
+    useEffect(() => {
+        if (activeId) {
+            const activePatient = patients.filter(patient => patient.id === activeId)[0]
+            console.log(activePatient)
+            setValue('name', activePatient.name)
+            setValue('caretaker', activePatient.caretaker)
+            setValue('email', activePatient.email)
+            setValue('date', activePatient.date)
+            setValue('symptoms', activePatient.symptoms)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeId])
     const registerPatient = (data: DraftPatient) => {
-        addPatient(data)
+        if (activeId) {
+            updatePatient(data)
+            toast.info('Paciente actualizado correctamente', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Slide,
+            })
+        } else {
+            addPatient(data)
+            toast.success('Paciente registrado correctamente', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Slide,
+            })
+        }
         reset()
     }
-
     return (
         <div className="md:w-1/2 lg:w-2/5 mx-5">
             <h2 className="font-black text-3xl text-center">Seguimiento Pacientes</h2>
